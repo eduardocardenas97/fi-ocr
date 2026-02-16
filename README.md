@@ -1,107 +1,182 @@
-# Fintech Innovation - Servicio de OCR y Extracción de Datos
+# NestJS GraphQL Microservice Template
 
-Servicio avanzado de procesamiento de documentos y reconocimiento óptico de caracteres (OCR) construido con NestJS. Permite la ingesta asíncrona de archivos y la extracción de datos estructurados utilizando múltiples motores de IA y OCR tradicional.
+Template base para construir microservicios con NestJS y GraphQL. Está pensado para clonarse y extenderse cuando se requiera un nuevo microservicio, manteniendo una estructura y convenciones comunes.
 
-## 🚀 Características Principales
+## 📌 Objetivo del template
 
-- **Motores de OCR Multi-Estrategia**:
-  - **PaddleOCR**: Motor de alto rendimiento para documentos multilingües y detección de ángulos.
-  - **Tesseract.js**: OCR tradicional basado en motor LSTM.
-  - **Ollama (LLM Vision)**: Extracción inteligente utilizando modelos de lenguaje (ej. Llama 3 Vision) para interpretar documentos complejos.
-  - **PdfText**: Extracción nativa de texto para PDFs vectoriales.
-- **Almacenamiento Híbrido**: Soporte para almacenamiento Local, Google Cloud Storage (GCS) y Oracle Cloud Infrastructure (OCI).
-- **Procesamiento Asíncrono**: Arquitectura basada en eventos y colas utilizando BullMQ y Redis para manejar cargas pesadas sin bloquear la API.
-- **Panel de Administración**: 
-  - Gestión de procesos en tiempo real (SSE).
-  - Rotación de imágenes y re-procesamiento.
-  - Validación de datos extraídos mediante reglas de negocio negociables.
-  - Registro de auditoría (Logs) por proceso.
-- **Logging Empresarial**: Integración completa con `@fintechinnovaciondev/fi-utils` para trazabilidad y formato estandarizado.
+- Servir como punto de partida para nuevos microservicios.
+- Estandarizar configuración, estructura y utilidades compartidas.
+- Facilitar el desarrollo de GraphQL con tipados automáticos.
+- Centralizar scripts útiles (build, lint, schema check, etc.).
 
-## 📁 Estructura del Proyecto
+## 🧰 Stack principal
 
-```text
+- **NestJS 11**
+- **Apollo Server 5**
+- **GraphQL** con archivos `.graphql` como fuente de esquema
+- **TypeScript**
+- **fi-utils** para logging y utilidades comunes
+- **Keyv / Redis** (opcional) para caching de respuestas
+
+## 🚀 Inicio rápido
+
+### 1) Instalar dependencias
+
+```bash
+yarn install
+```
+
+> El Dockerfile utiliza `yarn.lock`. Se recomienda usar Yarn para consistencia.
+
+### 2) Configurar variables de entorno
+
+Crea un archivo `.env` tomando como base [example.env](example.env):
+
+```bash
+cp example.env .env
+```
+
+Configura al menos:
+
+- `PORT`
+- `NODE_ENV`
+- `CORS_WHITELIST`
+- Variables JWT
+- Configuración de base de datos
+
+### 3) Ejecutar en desarrollo
+
+```bash
+yarn start:dev
+```
+
+La API estará disponible en:
+
+- `http://localhost:4000/graphql`
+
+## 📦 Scripts disponibles
+
+- `yarn start` — inicia la app
+- `yarn start:dev` — modo desarrollo con watch
+- `yarn build` — compila a `dist/`
+- `yarn lint` — lint + fix
+- `yarn test` — pruebas unitarias
+- `yarn schema:check` — valida esquema contra Apollo Studio
+
+## 🧬 Arquitectura de GraphQL
+
+El esquema se define en archivos `.graphql` dentro de `src/`. Los tipados TypeScript se generan automáticamente en:
+
+- `src/graphql.schema.ts`
+
+Generación de typings:
+
+- Se ejecuta automáticamente en `yarn start:dev`
+- También se ejecuta antes de `yarn build`
+
+Validación de esquema (Apollo Studio):
+
+```bash
+APOLLO_GRAPH_REF=<org>@<graph> yarn schema:check
+```
+
+## 🧱 Estructura del proyecto
+
+```
 src/
-├── admin/       # Controladores y servicios para el dashboard de administración
-├── auth/        # Estrategias de seguridad (API Key, Google OAuth2)
-├── common/      # Configuraciones compartidas y middleware (Logs, fi-utils)
-├── ocr/         # Corazón del sistema: estrategias de extracción y orquestación
-│   └── strategies/ # Implementaciones específicas: Tesseract, Paddle, Ollama, etc.
-├── schemas/     # Modelos de datos MongoDB (Mongoose)
-├── storage/     # Abstracción de sistema de archivos (Local, GCS, OCI)
-├── tenant/      # Lógica de gestión de clientes y configuraciones por tenant
-├── views/       # Interfaz de usuario (Handlebars) del panel administrativo
-└── main.ts      # Punto de entrada de la aplicación
+  app.module.ts              # Módulo raíz
+  main.ts                    # Bootstrap del servidor
+  config.ts                  # Configuración de logging (fi-utils)
+  gqlconfig.service.ts       # Configuración GraphQL/Apollo
+  graphql.schema.ts          # Tipados generados
+
+  example/                   # Módulo de ejemplo
+    example.graphql
+    example.module.ts
+    example.resolver.ts
+    example.service.ts
+
+  common/
+    decorators/              # Decoradores reutilizables
+
+  interfaces/                # Tipados de contexto y JWT
+
+  utils/
+    cache/graphql/           # Directivas de cache
+    classes/                 # Utilidades (MutationResponse, GeneralError, MailSender)
 ```
 
-## 🛠️ Requisitos e Instalación
+## ✅ Convenciones recomendadas
 
-### Requisitos Previos
+- Todo módulo debe tener su carpeta con:
+  - `*.module.ts`
+  - `*.resolver.ts`
+  - `*.service.ts`
+  - `*.graphql`
+- Separar interfaces y clases utilitarias en `src/interfaces` y `src/utils`.
+- Evitar lógica en resolvers; delegar en services.
 
-- **Docker y Docker Compose** (Recomendado para manejar dependencias de Python/PaddleOCR).
-- **Node.js 22** (Si se corre localmente).
-- **Redis** (Para la gestión de colas).
-- **MongoDB** (Persistencia de datos).
+## ➕ Cómo agregar un nuevo módulo
 
-### Instalación con Docker
+1. Crear carpeta `src/<modulo>/`.
+2. Definir el schema en `src/<modulo>/<modulo>.graphql`.
+3. Crear `resolver` y `service`.
+4. Registrar el módulo en `AppModule`.
 
-1. Configura el archivo `.env` (ver sección de variables de entorno).
-2. Construye y levanta los servicios:
+> Al iniciar en modo dev, los tipos se regeneran automáticamente.
+
+## 🧰 Logging y utilidades
+
+El template usa `fi-utils` para logging. Configuración central en:
+
+- [src/config.ts](src/config.ts)
+
+Utilidades incluidas:
+
+- `GeneralError` para errores GraphQL enriquecidos
+- `MutationResponse` para respuestas uniformes
+- `MailSender` para envío de correos
+
+## 🐳 Docker
+
+El Dockerfile construye la app y genera una imagen ligera (`distroless`).
+
+Variables importantes en build:
+
+- `NPM_TOKEN` (para instalar paquetes privados)
+
+Ejemplo de build:
 
 ```bash
-# Setea el token para paquetes privados de GitHub
-export NPM_TOKEN=tu_token_aqui
-
-# Construye e inicia
-docker-compose up --build -d
+docker build --build-arg NPM_TOKEN=xxxxx -t my-service .
 ```
 
-### Desarrollo Local
+Ejemplo de ejecución:
 
 ```bash
-# Instalación de dependencias
-npm install
-
-# Iniciar en modo observación
-npm run start:dev
+docker run -p 4000:4000 --env-file .env my-service
 ```
 
-## ⚙️ Variables de Entorno (.env)
+## 🧪 Testing
 
-| Categoría | Variable | Descripción | Ejemplo / Valor |
-| :--- | :--- | :--- | :--- |
-| **Base de Datos** | `MONGO_URI` | Cadena de conexión a MongoDB (ReplicaSet soportado) | `mongodb://ocr:ocr@10.20.125.60:30000...` |
-| **Colas (Redis)** | `REDIS_HOST` | Host del servidor Redis | `10.20.125.60` |
-| | `REDIS_PORT` | Puerto de Redis | `30379` |
-| | `REDIS_USER` | Usuario de Redis | `fi_moso` |
-| | `REDIS_PASSWORD` | Contraseña de Redis | `fi_moso_pass` |
-| | `REDIS_NAME` | Nombre de la cola (BullMQ) | `ocr-queue` |
-| | `REDIS_PREFIX` | Prefijo para las llaves en Redis | `moso` |
-| **IA (Ollama)** | `OLLAMA_URL` | URL de la API de Ollama | `http://10.20.125.60:31434/api/generate` |
-| | `OLLAMA_MODEL` | Modelo de lenguaje a utilizar | `ministral-3:14b` |
-| | `OLLAMA_TIMEOUT_MS` | Tiempo de espera máximo para la IA | `300000` |
-| **Auth & App** | `GOOGLE_CLIENT_ID` | ID de cliente OAuth2 de Google | `950827011061-h35...` |
-| | `GOOGLE_CLIENT_SECRET`| Secreto de cliente OAuth2 de Google | `GOCSPX-2T7m...` |
-| | `ADMIN_EMAIL` | Email del administrador para acceso al panel | `aortiz@fintechinversiones.com.py` |
-| | `SESSION_SECRET` | Secreto para firmar las cookies de sesión | `a_very_secure_string...` |
-| | `PORT` | Puerto de escucha de la aplicación | `3000` |
-| **Storage** | `STORAGE_TYPE` | Estrategia activa (`local`, `gcs`, `oci`) | `gcs` |
-| **GCS** | `GCS_PROJECT_ID` | ID del proyecto en Google Cloud | `fintech-ia-labs` |
-| (si aplica) | `GCS_BUCKET` | Nombre del Bucket en GCS | `ocr-bucket-dev` |
-| | `GCS_KEYS_JSON` | JSON completo de la Service Account | `{"type": "service_account", ...}` |
-| **OCI** | `OCI_NAMESPACE` | Namespace de Oracle Cloud | `tu-namespace` |
-| (si aplica) | `OCI_BUCKET` | Nombre del Bucket en OCI | `tu-bucket` |
-| | `OCI_REGION` | Región de OCI | `us-ashburn-1` |
-| **Build** | `NPM_TOKEN` | Token para acceso a paquetes privados de GitHub | `ghp_XmpH...` |
+```bash
+yarn test
+```
 
-## 📦 Sistema de Cache de Imágenes
+## 📎 Notas importantes
 
-Para optimizar el rendimiento de la interfaz, el sistema implementa una **cache local de imágenes**. Cuando se solicita la imagen de un proceso almacenado en la nube (GCS/OCI):
-1. El sistema verifica si el archivo ya existe en la carpeta `uploads/`.
-2. Si no existe, se descarga desde el proveedor correspondiente.
-3. Las siguientes peticiones se sirven directamente desde el disco local.
+- Este repositorio es un **template**, no un microservicio funcional final.
+- Antes de iniciar un nuevo microservicio, clona este repositorio y ajusta:
+  - nombre del proyecto
+  - variables de entorno
+  - módulos de negocio
 
-## 📄 Licencia
+---
 
-Este proyecto es propiedad de **Fintech Innovation** y su uso está limitado a fines internos según los acuerdos de licencia de la organización.
+### ✅ Checklist al crear un nuevo microservicio
 
+- [ ] Actualizar `package.json` (nombre, descripción)
+- [ ] Configurar `.env`
+- [ ] Renombrar módulos si aplica
+- [ ] Validar esquema GraphQL
+- [ ] Confirmar logging y JWT

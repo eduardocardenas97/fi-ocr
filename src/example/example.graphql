@@ -1,0 +1,29 @@
+type Demo {
+  """
+  Identificador único del ejemplo
+  """
+  id: ID!
+  """
+  Título breve del recurso de ejemplo
+  """
+  title: String!
+  """
+  Explicación corta del objetivo del ejemplo
+  """
+  description: String!
+  """
+  Fecha de la última actualización del recurso
+  """
+  updatedAt: String!
+}
+
+type Query {
+  """
+  Lista de demos para explorar el esquema
+  """
+  demos: [Demo!]!
+  """
+  Obtiene un demo puntual por id
+  """
+  demo(id: ID!): Demo
+}

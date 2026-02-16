@@ -1,0 +1,10 @@
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+directive @cacheControl(
+  maxAge: Int = 10
+  scope: CacheControlScope = PUBLIC
+  inheritMaxAge: Boolean = false
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION

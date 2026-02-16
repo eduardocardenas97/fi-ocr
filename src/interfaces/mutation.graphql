@@ -1,0 +1,18 @@
+"""
+Interfaz para las respuestas
+en los recursos del tipo mutación
+"""
+interface MutationResponse {
+  """
+  Código de estado
+  """
+  code: Int!
+  """
+  True si la operación fue exitosa
+  """
+  success: Boolean!
+  """
+  Mensaje de estado
+  """
+  message: String!
+}

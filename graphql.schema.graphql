@@ -1,0 +1,41 @@
+directive @cacheControl(maxAge: Int = 10, scope: CacheControlScope = PUBLIC, inheritMaxAge: Boolean = false) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+"""
+Interfaz para las respuestas
+en los recursos del tipo mutación
+"""
+interface MutationResponse {
+  """Código de estado"""
+  code: Int!
+  """True si la operación fue exitosa"""
+  success: Boolean!
+  """Mensaje de estado"""
+  message: String!
+}
+
+type Demo {
+  """Identificador único del ejemplo"""
+  id: ID!
+  """Título breve del recurso de ejemplo"""
+  title: String!
+  """Explicación corta del objetivo del ejemplo"""
+  description: String!
+  """Fecha de la última actualización del recurso"""
+  updatedAt: String!
+}
+
+type Query {
+  """Lista de demos para explorar el esquema"""
+  demos: [Demo!]!
+  """Obtiene un demo puntual por id"""
+  demo(id: ID!): Demo
+}
+
+schema {
+  query: Query
+}
