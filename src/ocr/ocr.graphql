@@ -1,36 +1,231 @@
-interface Documento {
-  """
-  Identificador único del ejemplo
-  """
-  id: ID!
-  """
-  Título breve del recurso de ejemplo
-  """
-  title: String!
-  """
-  Explicación corta del objetivo del ejemplo
-  """
-  description: String
-  """
-  Fecha de la última actualización del recurso
-  """
-  updatedAt: String
+# ────────────────────────────────────
+# Scalar personalizado para campos dinámicos
+# ────────────────────────────────────
+scalar JSON
+
+# ────────────────────────────────────
+# Enumeraciones
+# ────────────────────────────────────
+
+"""
+Reglas de validación disponibles para los campos de un extractor
+"""
+enum ReglaValidacion {
+  "Validación mediante expresión regular"
+  REGEX
+  "Longitud mínima del valor"
+  LONGITUD_MINIMA
+  "Longitud máxima del valor"
+  LONGITUD_MAXIMA
+  "Formato de fecha esperado"
+  FORMATO_FECHA
+  "Rango numérico permitido"
+  RANGO_NUMERICO
+  "Validación personalizada"
+  PERSONALIZADO
 }
 
-type DocumentoIdentidad implements Documento {
-  id: ID!
-  title: String!
-  description: String
-  updatedAt: String
+# ────────────────────────────────────
+# Tipos de salida (Output Types)
+# ────────────────────────────────────
+
+"""
+Validación aplicada a un campo del extractor
+"""
+type ValidacionCampo {
+  "Regla de validación a aplicar"
+  regla: ReglaValidacion!
+  "Parámetros de la regla (ej: patrón regex, valor mínimo)"
+  parametros: String
+  "Mensaje de error cuando la validación falla"
+  mensajeError: String
 }
+
+"""
+Esquema de un campo que será extraído desde un documento
+"""
+type EsquemaCampo {
+  "Nombre identificador del campo"
+  nombreCampo: String!
+  "Tipo de dato esperado (string, number, date, etc.)"
+  tipoCampo: String!
+  "Indica si el campo es obligatorio en la extracción"
+  requerido: Boolean!
+  "Descripción del campo (útil para LLMs y documentación)"
+  descripcion: String
+  "Validaciones aplicables al campo"
+  validaciones: [ValidacionCampo!]
+}
+
+"""
+Configuración de la estrategia de extracción OCR
+"""
+type ConfiguracionEstrategia {
+  "Identificador del tipo de estrategia (ej: FI_DEO)"
+  tipoEstrategia: String!
+}
+
+"""
+Extractor OCR — Define qué campos se extraen de un documento,
+las validaciones a aplicar y la estrategia de extracción a utilizar
+"""
+type Extractor {
+  "Identificador único del extractor"
+  id: ID!
+  "Nombre descriptivo del extractor"
+  nombre: String!
+  "Descripción del propósito del extractor"
+  descripcion: String
+  "Esquema de campos que define qué datos se extraerán"
+  esquemaCampos: [EsquemaCampo!]!
+  "Configuración de la estrategia de extracción"
+  configuracionEstrategia: ConfiguracionEstrategia!
+  "Fecha de creación del extractor"
+  creadoEn: String!
+  "Fecha de última actualización"
+  actualizadoEn: String!
+}
+
+"""
+Resultado de una extracción OCR ejecutada sobre un documento
+"""
+type ResultadoExtraccion {
+  "Campos extraídos del documento (clave-valor dinámico)"
+  campos: JSON!
+  "Nivel de confianza de la extracción (0.0 a 1.0)"
+  confianza: Float!
+  "Advertencias generadas durante la extracción"
+  advertencias: [String!]
+}
+
+# ────────────────────────────────────
+# Tipos de entrada (Input Types)
+# ────────────────────────────────────
+
+"""
+Input para crear una validación de campo
+"""
+input ValidacionCampoInput {
+  "Regla de validación a aplicar"
+  regla: ReglaValidacion!
+  "Parámetros de la regla"
+  parametros: String
+  "Mensaje de error personalizado"
+  mensajeError: String
+}
+
+"""
+Input para definir el esquema de un campo a extraer
+"""
+input EsquemaCampoInput {
+  "Nombre identificador del campo"
+  nombreCampo: String!
+  "Tipo de dato esperado"
+  tipoCampo: String!
+  "Si el campo es obligatorio"
+  requerido: Boolean!
+  "Descripción del campo (útil para LLMs y documentación)"
+  descripcion: String
+  "Validaciones del campo"
+  validaciones: [ValidacionCampoInput!]
+}
+
+"""
+Input para la configuración de la estrategia de extracción
+"""
+input ConfiguracionEstrategiaInput {
+  "Tipo de estrategia (ej: FI_DEO)"
+  tipoEstrategia: String!
+}
+
+"""
+Input para crear un nuevo extractor OCR
+"""
+input CrearExtractorInput {
+  "Nombre descriptivo del extractor"
+  nombre: String!
+  "Descripción del propósito del extractor"
+  descripcion: String
+  "Esquema de campos a extraer"
+  esquemaCampos: [EsquemaCampoInput!]!
+  "Configuración de la estrategia de extracción"
+  configuracionEstrategia: ConfiguracionEstrategiaInput!
+}
+
+"""
+Input para actualizar un extractor existente (campos opcionales)
+"""
+input ActualizarExtractorInput {
+  "Nombre descriptivo del extractor"
+  nombre: String
+  "Descripción del propósito del extractor"
+  descripcion: String
+  "Esquema de campos a extraer"
+  esquemaCampos: [EsquemaCampoInput!]
+  "Configuración de la estrategia de extracción"
+  configuracionEstrategia: ConfiguracionEstrategiaInput
+}
+
+"""
+Input con los datos del archivo a procesar en una extracción
+"""
+input ArchivoExtraccionInput {
+  "URL del archivo a procesar"
+  urlArchivo: String!
+  "Tipo MIME del archivo (ej: application/pdf, image/png)"
+  tipoMime: String!
+  "Metadatos adicionales para la extracción"
+  metadatos: JSON
+}
+
+"""
+Input para filtrar la lista de extractores
+"""
+input FiltroExtractorInput {
+  "Filtrar por nombre (búsqueda parcial)"
+  nombre: String
+  "Filtrar por tipo de estrategia"
+  tipoEstrategia: String
+}
+
+# ────────────────────────────────────
+# Queries
+# ────────────────────────────────────
 
 type Query {
   """
-  Lista de demos para explorar el esquema
+  Obtiene un extractor por su identificador único
   """
-  demos: [Documento!]!
+  extractor(id: ID!): Extractor
+
   """
-  Obtiene un demo puntual por id
+  Obtiene la lista de extractores, opcionalmente filtrada
   """
-  demo(id: ID!): Documento
+  extractores(filtro: FiltroExtractorInput): [Extractor!]!
+}
+
+# ────────────────────────────────────
+# Mutations
+# ────────────────────────────────────
+
+type Mutation {
+  """
+  Crea un nuevo extractor OCR
+  """
+  crearExtractor(input: CrearExtractorInput!): Extractor!
+
+  """
+  Actualiza un extractor existente
+  """
+  actualizarExtractor(id: ID!, input: ActualizarExtractorInput!): Extractor!
+
+  """
+  Elimina un extractor del sistema
+  """
+  eliminarExtractor(id: ID!): Boolean!
+
+  """
+  Ejecuta una extracción OCR sobre un documento usando el extractor indicado
+  """
+  ejecutarExtraccion(id: ID!, input: ArchivoExtraccionInput!): ResultadoExtraccion!
 }

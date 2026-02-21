@@ -33,6 +33,7 @@ export class GqlConfigService implements GqlOptionsFactory {
 
     return {
       typePaths: ["./**/*.graphql"],
+      resolvers: { JSON: require("graphql-type-json").default },
       // Disable subscriptions to avoid pulling in subscriptions-transport-ws
       installSubscriptionHandlers: false,
       playground: false,
