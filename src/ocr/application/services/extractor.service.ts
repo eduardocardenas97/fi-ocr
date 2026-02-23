@@ -43,6 +43,12 @@ export class ExtractorService {
     try {
       this.log.debug(`Creando extractor: ${dto.name}`);
 
+      // Verificar si ya existe un extractor con el mismo nombre
+      const existingExtractor = await this.repository.findByName(dto.name);
+      if (existingExtractor) {
+        throw new GeneralError(`Ya existe un extractor con el nombre: ${dto.name}`, { code: 'CONFLICT', idReq: this.log?.id?.value });
+      }
+
       // Validar que la estrategia exista y la configuración sea válida
       this.validateStrategyConfig(dto.strategyConfig);
 
@@ -57,7 +63,7 @@ export class ExtractorService {
       return extractor;
     } catch (error) {
       this.log.error(`Error al crear extractor: ${error.message}`);
-      throw new GeneralError(error.message, { code: 'INTERNAL_SERVER_ERROR', idReq: this.log?.id?.value });
+      throw error instanceof GeneralError ? error : new GeneralError(error.message, { code: 'INTERNAL_SERVER_ERROR', idReq: this.log?.id?.value });
     }
   }
 
@@ -154,6 +160,14 @@ export class ExtractorService {
   async updateExtractor(id: string, dto: UpdateExtractorDto): Promise<Extractor> {
     try {
       this.log.debug(`Actualizando extractor: ${id}`);
+
+      // Si se actualiza el nombre, verificar que no exista otro con el mismo nombre
+      if (dto.name) {
+        const existingExtractor = await this.repository.findByName(dto.name);
+        if (existingExtractor && existingExtractor.id !== id) {
+          throw new GeneralError(`Ya existe un extractor con el nombre: ${dto.name}`, { code: 'CONFLICT', idReq: this.log?.id?.value });
+        }
+      }
 
       // Si se actualiza la configuración de estrategia, validarla
       if (dto.strategyConfig?.strategyType) {

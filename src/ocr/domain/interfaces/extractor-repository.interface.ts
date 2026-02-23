@@ -25,6 +25,13 @@ export interface IExtractorRepository {
   findById(id: string): Promise<Extractor | null>;
 
   /**
+   * Busca un extractor por su nombre exacto.
+   * @param name - Nombre del extractor
+   * @returns El extractor encontrado o null si no existe
+   */
+  findByName(name: string): Promise<Extractor | null>;
+
+  /**
    * Obtiene una lista de extractores según los filtros proporcionados.
    * @param filter - Criterios de filtrado opcionales
    * @returns Lista de extractores que cumplen con los filtros

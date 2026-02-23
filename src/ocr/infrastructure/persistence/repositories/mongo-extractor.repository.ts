@@ -43,6 +43,14 @@ export class MongoExtractorRepository implements IExtractorRepository {
   }
 
   /**
+   * Busca un extractor por su nombre exacto en MongoDB.
+   */
+  async findByName(name: string): Promise<Extractor | null> {
+    const doc = await this.model.findOne({ name }).exec();
+    return doc ? this.toDomain(doc) : null;
+  }
+
+  /**
    * Obtiene una lista de extractores filtrada.
    */
   async findAll(filter?: Record<string, any>): Promise<Extractor[]> {

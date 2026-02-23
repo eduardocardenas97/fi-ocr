@@ -139,7 +139,6 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
       string: 'str',
       number: 'int',
       float: 'float',
-      date: 'date',
       boolean: 'bool',
     };
     return typeMap[fieldType.toLowerCase()] ?? 'str';
