@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { IExtractionStrategy } from '../../domain/interfaces/extraction-strategy.interface';
-import { IStrategyConfig } from '../../domain/interfaces/strategy-config.interface';
+import { Injectable } from "@nestjs/common";
+import { IExtractionStrategy } from "../../domain/interfaces/extraction-strategy.interface";
+import { IStrategyConfig } from "../../domain/interfaces/strategy-config.interface";
 
 /**
  * Registro centralizado de estrategias de extracción OCR.
@@ -32,7 +32,7 @@ export class StrategyRegistry {
     if (!strategy) {
       throw new Error(
         `Estrategia de extracción no encontrada: "${strategyType}". ` +
-          `Estrategias disponibles: ${this.getAvailableTypes().join(', ')}`,
+          `Estrategias disponibles: ${this.getAvailableTypes().join(", ")}`,
       );
     }
     return strategy;

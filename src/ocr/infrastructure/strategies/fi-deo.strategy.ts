@@ -1,8 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { IExtractionStrategy } from '../../domain/interfaces/extraction-strategy.interface';
-import { ExtractionInput } from '../../domain/types/extraction-input.type';
-import { ExtractionResult } from '../../domain/types/extraction-result.type';
-import { FiDeoConfig } from './fi-deo/fi-deo.config';
+import { Injectable, Inject } from "@nestjs/common";
+import { IExtractionStrategy } from "../../domain/interfaces/extraction-strategy.interface";
+import { ExtractionInput } from "../../domain/types/extraction-input.type";
+import { ExtractionResult } from "../../domain/types/extraction-result.type";
+import { FiDeoConfig } from "./fi-deo/fi-deo.config";
 import { CONTEXT } from "@nestjs/graphql";
 
 /**
@@ -13,7 +13,7 @@ import { CONTEXT } from "@nestjs/graphql";
 @Injectable()
 export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
   /** Tipo de estrategia — "FI_DEO" */
-  readonly strategyType = 'FI_DEO';
+  readonly strategyType = "FI_DEO";
   private log;
   constructor(@Inject(CONTEXT) private context: any) {
     this.log = this.context.log;
@@ -25,20 +25,29 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
    * @param config - Configuración de la estrategia
    * @returns Resultado de la extracción
    */
-  async extract(input: ExtractionInput, config: FiDeoConfig): Promise<ExtractionResult> {
+  async extract(
+    input: ExtractionInput,
+    config: FiDeoConfig,
+  ): Promise<ExtractionResult> {
     // Leer credenciales desde variables de entorno
     const endpoint = process.env.FIDEO_ENDPOINT;
     const apiKey = process.env.FIDEO_API_KEY;
 
     if (!endpoint || !apiKey) {
-      throw new Error('FiDeo no configurado: faltan variables de entorno FIDEO_ENDPOINT o FIDEO_API_KEY');
+      throw new Error(
+        "FiDeo no configurado: faltan variables de entorno FIDEO_ENDPOINT o FIDEO_API_KEY",
+      );
     }
 
-    this.log.debug(`Iniciando extracción para ${input.fileUrl} con config ${JSON.stringify(config)}`);
+    this.log.debug(
+      `Iniciando extracción para ${input.fileUrl} con config ${JSON.stringify(config)}`,
+    );
     // Obtener la imagen en base64
     const imageBase64 = await this.fetchAndConvertToBase64(input.fileUrl);
 
-    this.log.debug(`Imagen convertida a base64, longitud ${imageBase64.length} caracteres`);
+    this.log.debug(
+      `Imagen convertida a base64, longitud ${imageBase64.length} caracteres`,
+    );
 
     // Construir el schema en el formato esperado por FiDeo
     const schema = this.buildFiDeoSchema(input.metadata);
@@ -48,10 +57,10 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
     const url = `${endpoint}/api/v1/extract`;
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey,
       },
       body: JSON.stringify({
         image_base64: imageBase64,
@@ -59,10 +68,12 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
       }),
     });
 
-    this.log.debug(`Enviando solicitud a ${url} con schema ${JSON.stringify(schema)}`);
+    this.log.debug(
+      `Enviando solicitud a ${url} con schema ${JSON.stringify(schema)}`,
+    );
 
     if (!response.ok) {
-      const errorBody = await response.text().catch(() => 'Sin detalle');
+      const errorBody = await response.text().catch(() => "Sin detalle");
       throw new Error(
         `Error en la extracción FiDeo: ${response.status} ${response.statusText} - ${errorBody}`,
       );
@@ -92,16 +103,20 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
     try {
       response = await fetch(fileUrl);
     } catch (error) {
-      this.log.error(`Error al descargar la imagen desde ${fileUrl}: ${error.message}`);
+      this.log.error(
+        `Error al descargar la imagen desde ${fileUrl}: ${error.message}`,
+      );
       throw new Error(`Error al descargar la imagen: ${error.message}`);
     }
     if (!response.ok) {
-      throw new Error(`Error al descargar la imagen: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Error al descargar la imagen: ${response.status} ${response.statusText}`,
+      );
     }
 
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    return buffer.toString('base64');
+    return buffer.toString("base64");
   }
 
   /**
@@ -110,7 +125,7 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
    * @returns Objeto schema para FiDeo
    */
   private buildFiDeoSchema(metadata: Record<string, any>): any {
-    const extractorName = metadata.extractorName ?? 'Documento';
+    const extractorName = metadata.extractorName ?? "Documento";
     const fieldSchemas = metadata.fieldSchemas ?? [];
 
     const fields: Record<string, any> = {};
@@ -136,12 +151,12 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
    */
   private mapFieldType(fieldType: string): string {
     const typeMap: Record<string, string> = {
-      string: 'str',
-      number: 'int',
-      float: 'float',
-      boolean: 'bool',
+      string: "str",
+      number: "int",
+      float: "float",
+      boolean: "bool",
     };
-    return typeMap[fieldType.toLowerCase()] ?? 'str';
+    return typeMap[fieldType.toLowerCase()] ?? "str";
   }
 
   /**
@@ -151,9 +166,6 @@ export class FiDeoStrategy implements IExtractionStrategy<FiDeoConfig> {
    * @returns true si el tipo de estrategia es correcto
    */
   validateConfig(config: FiDeoConfig): boolean {
-    return !!(
-      config &&
-      config.strategyType === 'FI_DEO'
-    );
+    return !!(config && config.strategyType === "FI_DEO");
   }
 }

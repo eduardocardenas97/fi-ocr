@@ -241,5 +241,8 @@ type Mutation {
   """
   Ejecuta una extracción OCR sobre un documento usando el extractor indicado
   """
-  ejecutarExtraccion(id: ID!, input: ArchivoExtraccionInput!): ResultadoExtraccion!
+  ejecutarExtraccion(
+    id: ID!
+    input: ArchivoExtraccionInput!
+  ): ResultadoExtraccion!
 }

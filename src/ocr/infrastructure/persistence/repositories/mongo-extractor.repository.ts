@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Extractor } from '../../../domain/entities/extractor.entity';
-import { FieldSchema } from '../../../domain/value-objects/field-schema.vo';
-import { FieldValidation } from '../../../domain/value-objects/field-validation.vo';
-import { IExtractorRepository } from '../../../domain/interfaces/extractor-repository.interface';
-import { IStrategyConfig } from '../../../domain/interfaces/strategy-config.interface';
-import { ValidationRule } from '../../../domain/enums/validation-rule.enum';
-import { ExtractorDocument, ExtractorDoc } from '../schemas/extractor.schema';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Extractor } from "../../../domain/entities/extractor.entity";
+import { FieldSchema } from "../../../domain/value-objects/field-schema.vo";
+import { FieldValidation } from "../../../domain/value-objects/field-validation.vo";
+import { IExtractorRepository } from "../../../domain/interfaces/extractor-repository.interface";
+import { IStrategyConfig } from "../../../domain/interfaces/strategy-config.interface";
+import { ValidationRule } from "../../../domain/enums/validation-rule.enum";
+import { ExtractorDocument, ExtractorDoc } from "../schemas/extractor.schema";
 
 /**
  * Implementación del repositorio de extractores usando MongoDB/Mongoose.
@@ -57,10 +57,10 @@ export class MongoExtractorRepository implements IExtractorRepository {
     const query: Record<string, any> = {};
 
     if (filter?.name) {
-      query.name = { $regex: filter.name, $options: 'i' };
+      query.name = { $regex: filter.name, $options: "i" };
     }
     if (filter?.strategyType) {
-      query['strategyConfig.strategyType'] = filter.strategyType;
+      query["strategyConfig.strategyType"] = filter.strategyType;
     }
 
     const docs = await this.model.find(query).sort({ createdAt: -1 }).exec();
@@ -70,7 +70,10 @@ export class MongoExtractorRepository implements IExtractorRepository {
   /**
    * Actualiza parcialmente un extractor existente.
    */
-  async update(id: string, data: Partial<Extractor>): Promise<Extractor | null> {
+  async update(
+    id: string,
+    data: Partial<Extractor>,
+  ): Promise<Extractor | null> {
     const doc = await this.model
       .findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true })
       .exec();

@@ -1,12 +1,12 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ExtractorService } from '../application/services/extractor.service';
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { ExtractorService } from "../application/services/extractor.service";
 
 /**
  * Resolver de GraphQL para el módulo de extractores OCR.
  * Expone las operaciones de consulta y mutación definidas
  * en el schema GraphQL (ocr.graphql) en español.
  */
-@Resolver('Extractor')
+@Resolver("Extractor")
 export class ExtractorResolver {
   constructor(private readonly extractorService: ExtractorService) {}
 
@@ -17,8 +17,8 @@ export class ExtractorResolver {
   /**
    * Query: extractor(id) — Obtiene un extractor por su ID
    */
-  @Query('extractor')
-  async extractor(@Args('id') id: string) {
+  @Query("extractor")
+  async extractor(@Args("id") id: string) {
     const result = await this.extractorService.findById(id);
     return this.mapExtractorToGql(result);
   }
@@ -26,8 +26,8 @@ export class ExtractorResolver {
   /**
    * Query: extractores(filtro) — Obtiene la lista de extractores
    */
-  @Query('extractores')
-  async extractores(@Args('filtro') filtro?: any) {
+  @Query("extractores")
+  async extractores(@Args("filtro") filtro?: any) {
     const filter = filtro
       ? {
           name: filtro.nombre,
@@ -46,8 +46,8 @@ export class ExtractorResolver {
   /**
    * Mutation: crearExtractor(input) — Crea un nuevo extractor
    */
-  @Mutation('crearExtractor')
-  async crearExtractor(@Args('input') input: any) {
+  @Mutation("crearExtractor")
+  async crearExtractor(@Args("input") input: any) {
     const dto = {
       name: input.nombre,
       description: input.descripcion,
@@ -74,8 +74,8 @@ export class ExtractorResolver {
   /**
    * Mutation: actualizarExtractor(id, input) — Actualiza un extractor existente
    */
-  @Mutation('actualizarExtractor')
-  async actualizarExtractor(@Args('id') id: string, @Args('input') input: any) {
+  @Mutation("actualizarExtractor")
+  async actualizarExtractor(@Args("id") id: string, @Args("input") input: any) {
     const dto: any = {};
 
     if (input.nombre !== undefined) dto.name = input.nombre;
@@ -106,23 +106,26 @@ export class ExtractorResolver {
   /**
    * Mutation: eliminarExtractor(id) — Elimina un extractor
    */
-  @Mutation('eliminarExtractor')
-  async eliminarExtractor(@Args('id') id: string): Promise<boolean> {
+  @Mutation("eliminarExtractor")
+  async eliminarExtractor(@Args("id") id: string): Promise<boolean> {
     return this.extractorService.deleteExtractor(id);
   }
 
   /**
    * Mutation: ejecutarExtraccion(id, input) — Ejecuta una extracción OCR
    */
-  @Mutation('ejecutarExtraccion')
-  async ejecutarExtraccion(@Args('id') id: string, @Args('input') input: any) {
+  @Mutation("ejecutarExtraccion")
+  async ejecutarExtraccion(@Args("id") id: string, @Args("input") input: any) {
     const extractionInput = {
       fileUrl: input.urlArchivo,
       mimeType: input.tipoMime,
       metadata: input.metadatos ?? {},
     };
 
-    const result = await this.extractorService.runExtraction(id, extractionInput);
+    const result = await this.extractorService.runExtraction(
+      id,
+      extractionInput,
+    );
 
     return {
       campos: result.fields,
@@ -163,7 +166,8 @@ export class ExtractorResolver {
         tipoEstrategia: extractor.strategyConfig?.strategyType,
       },
       creadoEn: extractor.createdAt?.toISOString?.() ?? extractor.createdAt,
-      actualizadoEn: extractor.updatedAt?.toISOString?.() ?? extractor.updatedAt,
+      actualizadoEn:
+        extractor.updatedAt?.toISOString?.() ?? extractor.updatedAt,
     };
   }
 
@@ -172,12 +176,12 @@ export class ExtractorResolver {
    */
   private mapReglaToRule(regla: string): string {
     const map: Record<string, string> = {
-      REGEX: 'REGEX',
-      LONGITUD_MINIMA: 'MIN_LENGTH',
-      LONGITUD_MAXIMA: 'MAX_LENGTH',
-      FORMATO_FECHA: 'DATE_FORMAT',
-      RANGO_NUMERICO: 'NUMERIC_RANGE',
-      PERSONALIZADO: 'CUSTOM',
+      REGEX: "REGEX",
+      LONGITUD_MINIMA: "MIN_LENGTH",
+      LONGITUD_MAXIMA: "MAX_LENGTH",
+      FORMATO_FECHA: "DATE_FORMAT",
+      RANGO_NUMERICO: "NUMERIC_RANGE",
+      PERSONALIZADO: "CUSTOM",
     };
     return map[regla] ?? regla;
   }
@@ -187,12 +191,12 @@ export class ExtractorResolver {
    */
   private mapRuleToRegla(rule: string): string {
     const map: Record<string, string> = {
-      REGEX: 'REGEX',
-      MIN_LENGTH: 'LONGITUD_MINIMA',
-      MAX_LENGTH: 'LONGITUD_MAXIMA',
-      DATE_FORMAT: 'FORMATO_FECHA',
-      NUMERIC_RANGE: 'RANGO_NUMERICO',
-      CUSTOM: 'PERSONALIZADO',
+      REGEX: "REGEX",
+      MIN_LENGTH: "LONGITUD_MINIMA",
+      MAX_LENGTH: "LONGITUD_MAXIMA",
+      DATE_FORMAT: "FORMATO_FECHA",
+      NUMERIC_RANGE: "RANGO_NUMERICO",
+      CUSTOM: "PERSONALIZADO",
     };
     return map[rule] ?? rule;
   }

@@ -1,5 +1,5 @@
-import { FieldSchema } from '../value-objects';
-import { IStrategyConfig } from '../interfaces';
+import { FieldSchema } from "../value-objects";
+import { IStrategyConfig } from "../interfaces";
 
 /**
  * Entidad principal (Aggregate Root) que representa un extractor OCR.

@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { FieldSchema } from '../../domain/value-objects';
-import { ValidationRule } from '../../domain/enums';
+import { Injectable } from "@nestjs/common";
+import { FieldSchema } from "../../domain/value-objects";
+import { ValidationRule } from "../../domain/enums";
 
 /**
  * Representa un error de validación para un campo extraído.
@@ -31,19 +31,22 @@ export class FieldValidatorService {
    * @param fields - Valores extraídos por la estrategia OCR
    * @returns Lista de errores de validación encontrados
    */
-  validate(schema: FieldSchema[], fields: Record<string, any>): FieldValidationError[] {
+  validate(
+    schema: FieldSchema[],
+    fields: Record<string, any>,
+  ): FieldValidationError[] {
     const errors: FieldValidationError[] = [];
 
     for (const fieldDef of schema) {
       const rawValue = fields[fieldDef.fieldName];
       const isEmpty =
-        rawValue === null || rawValue === undefined || rawValue === '';
+        rawValue === null || rawValue === undefined || rawValue === "";
 
       // Verificar campos requeridos
       if (fieldDef.required && isEmpty) {
         errors.push({
           fieldName: fieldDef.fieldName,
-          rule: 'REQUIRED',
+          rule: "REQUIRED",
           extractedValue: undefined,
           message: `El campo "${fieldDef.fieldName}" es requerido pero no fue extraído.`,
         });
@@ -56,7 +59,11 @@ export class FieldValidatorService {
       const value = String(rawValue);
 
       for (const validation of fieldDef.validations) {
-        const passed = this.applyRule(validation.rule, value, validation.params);
+        const passed = this.applyRule(
+          validation.rule,
+          value,
+          validation.params,
+        );
         if (!passed) {
           errors.push({
             fieldName: fieldDef.fieldName,
@@ -80,7 +87,11 @@ export class FieldValidatorService {
    * @param params - Parámetros de la regla (patron regex, longitud, formato, etc.)
    * @returns true si la validación pasa, false si falla
    */
-  private applyRule(rule: ValidationRule, value: string, params: string | any): boolean {
+  private applyRule(
+    rule: ValidationRule,
+    value: string,
+    params: string | any,
+  ): boolean {
     switch (rule) {
       case ValidationRule.REGEX: {
         try {
@@ -125,11 +136,11 @@ export class FieldValidatorService {
    */
   private validateDateFormat(value: string, format: string): boolean {
     const formatPatterns: Record<string, RegExp> = {
-      'DD/MM/YYYY': /^\d{2}\/\d{2}\/\d{4}$/,
-      'MM/DD/YYYY': /^\d{2}\/\d{2}\/\d{4}$/,
-      'YYYY-MM-DD': /^\d{4}-\d{2}-\d{2}$/,
-      'DD-MM-YYYY': /^\d{2}-\d{2}-\d{4}$/,
-      'YYYY/MM/DD': /^\d{4}\/\d{2}\/\d{2}$/,
+      "DD/MM/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
+      "MM/DD/YYYY": /^\d{2}\/\d{2}\/\d{4}$/,
+      "YYYY-MM-DD": /^\d{4}-\d{2}-\d{2}$/,
+      "DD-MM-YYYY": /^\d{2}-\d{2}-\d{4}$/,
+      "YYYY/MM/DD": /^\d{4}\/\d{2}\/\d{2}$/,
     };
 
     const regex = formatPatterns[format.toUpperCase()];
@@ -151,11 +162,11 @@ export class FieldValidatorService {
     let min: number | undefined;
     let max: number | undefined;
 
-    if (typeof params === 'string') {
-      const parts = params.split(',');
+    if (typeof params === "string") {
+      const parts = params.split(",");
       if (parts[0]?.trim()) min = parseFloat(parts[0].trim());
       if (parts[1]?.trim()) max = parseFloat(parts[1].trim());
-    } else if (typeof params === 'object' && params !== null) {
+    } else if (typeof params === "object" && params !== null) {
       min = params.min !== undefined ? parseFloat(params.min) : undefined;
       max = params.max !== undefined ? parseFloat(params.max) : undefined;
     }

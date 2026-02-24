@@ -1,13 +1,16 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ExtractorDocument, ExtractorSchema } from './infrastructure/persistence/schemas/extractor.schema';
-import { MongoExtractorRepository } from './infrastructure/persistence/repositories/mongo-extractor.repository';
-import { EXTRACTOR_REPOSITORY } from './domain/interfaces/extractor-repository.interface';
-import { FiDeoStrategy } from './infrastructure/strategies/fi-deo.strategy';
-import { StrategyRegistry } from './application/registry/strategy.registry';
-import { ExtractorService } from './application/services/extractor.service';
-import { ExtractorResolver } from './presentation/extractor.resolver';
-import { FieldValidatorService } from './application/services/field-validator.service';
+import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
+import {
+  ExtractorDocument,
+  ExtractorSchema,
+} from "./infrastructure/persistence/schemas/extractor.schema";
+import { MongoExtractorRepository } from "./infrastructure/persistence/repositories/mongo-extractor.repository";
+import { EXTRACTOR_REPOSITORY } from "./domain/interfaces/extractor-repository.interface";
+import { FiDeoStrategy } from "./infrastructure/strategies/fi-deo.strategy";
+import { StrategyRegistry } from "./application/registry/strategy.registry";
+import { ExtractorService } from "./application/services/extractor.service";
+import { ExtractorResolver } from "./presentation/extractor.resolver";
+import { FieldValidatorService } from "./application/services/field-validator.service";
 
 /**
  * Módulo principal de OCR.

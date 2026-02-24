@@ -1,4 +1,4 @@
-import { ValidationRule } from '../enums';
+import { ValidationRule } from "../enums";
 
 /**
  * Representa una validación individual aplicable a un campo extraído.

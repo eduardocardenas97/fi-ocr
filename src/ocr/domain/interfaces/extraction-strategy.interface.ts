@@ -1,6 +1,6 @@
-import { ExtractionInput } from '../types/extraction-input.type';
-import { ExtractionResult } from '../types/extraction-result.type';
-import { IStrategyConfig } from './strategy-config.interface';
+import { ExtractionInput } from "../types/extraction-input.type";
+import { ExtractionResult } from "../types/extraction-result.type";
+import { IStrategyConfig } from "./strategy-config.interface";
 
 /**
  * Interfaz que define el contrato para una estrategia de extracción OCR.
@@ -12,7 +12,9 @@ import { IStrategyConfig } from './strategy-config.interface';
  *
  * @template C - Tipo de configuración específica de la estrategia
  */
-export interface IExtractionStrategy<C extends IStrategyConfig = IStrategyConfig> {
+export interface IExtractionStrategy<
+  C extends IStrategyConfig = IStrategyConfig,
+> {
   /** Identificador del tipo de estrategia */
   readonly strategyType: string;
 

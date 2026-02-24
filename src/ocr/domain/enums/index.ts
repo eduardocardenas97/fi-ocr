@@ -1,1 +1,1 @@
-export { ValidationRule } from './validation-rule.enum';
+export { ValidationRule } from "./validation-rule.enum";

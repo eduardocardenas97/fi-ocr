@@ -1,4 +1,4 @@
-import { FieldValidation } from './field-validation.vo';
+import { FieldValidation } from "./field-validation.vo";
 
 /**
  * Representa el esquema de un campo dentro de un extractor.

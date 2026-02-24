@@ -1,4 +1,4 @@
-import { ExtractionWarning } from './extraction-warning.type';
+import { ExtractionWarning } from "./extraction-warning.type";
 
 /**
  * Representa el resultado de una extracción OCR.

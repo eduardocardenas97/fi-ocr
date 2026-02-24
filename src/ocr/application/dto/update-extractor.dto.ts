@@ -1,6 +1,13 @@
-import { IsString, IsOptional, IsBoolean, IsArray, ValidateNested, IsEnum } from 'class-validator';
-import { Type } from 'class-transformer';
-import { ValidationRule } from '../../domain/enums/validation-rule.enum';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsEnum,
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ValidationRule } from "../../domain/enums/validation-rule.enum";
 
 /**
  * DTO para validaciones de campo en actualización (todos los campos opcionales).

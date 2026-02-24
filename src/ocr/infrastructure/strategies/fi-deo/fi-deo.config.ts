@@ -1,4 +1,4 @@
-import { IStrategyConfig } from '../../../domain/interfaces/strategy-config.interface';
+import { IStrategyConfig } from "../../../domain/interfaces/strategy-config.interface";
 
 /**
  * Configuración específica para la estrategia de extracción FiDeo.
@@ -6,7 +6,7 @@ import { IStrategyConfig } from '../../../domain/interfaces/strategy-config.inte
  */
 export class FiDeoConfig implements IStrategyConfig {
   /** Tipo de estrategia — siempre "FI_DEO" */
-  readonly strategyType = 'FI_DEO';
+  readonly strategyType = "FI_DEO";
 
   constructor(partial?: Partial<FiDeoConfig>) {
     if (partial) {

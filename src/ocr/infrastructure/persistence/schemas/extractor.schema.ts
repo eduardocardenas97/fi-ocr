@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory, raw } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
 
 /**
  * Subdocumento para validaciones de campos.
@@ -20,7 +20,9 @@ export class FieldValidationSchema {
   errorMessage: string;
 }
 
-export const FieldValidationMongoSchema = SchemaFactory.createForClass(FieldValidationSchema);
+export const FieldValidationMongoSchema = SchemaFactory.createForClass(
+  FieldValidationSchema,
+);
 
 /**
  * Subdocumento para el esquema de un campo del extractor.
@@ -49,14 +51,15 @@ export class FieldSchemaDoc {
   validations: FieldValidationSchema[];
 }
 
-export const FieldSchemaMongoSchema = SchemaFactory.createForClass(FieldSchemaDoc);
+export const FieldSchemaMongoSchema =
+  SchemaFactory.createForClass(FieldSchemaDoc);
 
 /**
  * Documento principal de Mongoose para el Extractor (Aggregate Root).
  * Representa la colección 'extractors' en MongoDB.
  */
 @Schema({
-  collection: 'extractors',
+  collection: "extractors",
   timestamps: true,
   toJSON: {
     virtuals: true,

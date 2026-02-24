@@ -1,4 +1,4 @@
-import { Extractor } from '../entities/extractor.entity';
+import { Extractor } from "../entities/extractor.entity";
 
 /**
  * Interfaz del repositorio para la entidad Extractor.
@@ -55,4 +55,4 @@ export interface IExtractorRepository {
 }
 
 /** Token de inyección para el repositorio de extractores */
-export const EXTRACTOR_REPOSITORY = Symbol('IExtractorRepository');
+export const EXTRACTOR_REPOSITORY = Symbol("IExtractorRepository");

@@ -1,1 +1,1 @@
-export { Extractor } from './extractor.entity';
+export { Extractor } from "./extractor.entity";
