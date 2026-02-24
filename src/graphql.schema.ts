@@ -116,10 +116,17 @@ export class Extractor {
     actualizadoEn: string;
 }
 
+export class AdvertenciaValidacion {
+    campo: string;
+    regla: string;
+    valorExtraido?: Nullable<string>;
+    mensaje: string;
+}
+
 export class ResultadoExtraccion {
     campos: JSON;
     confianza: number;
-    advertencias?: Nullable<string[]>;
+    advertencias?: Nullable<AdvertenciaValidacion[]>;
 }
 
 export abstract class IMutation {

@@ -13,6 +13,8 @@ import { CreateExtractorDto } from '../dto/create-extractor.dto';
 import { UpdateExtractorDto } from '../dto/update-extractor.dto';
 import { FilterExtractorDto } from '../dto/filter-extractor.dto';
 import { GeneralError } from '../../../utils/classes';
+import { FieldValidatorService } from './field-validator.service';
+import { ExtractionWarning } from '../../domain/types';
 
 /**
  * Servicio de aplicación para la gestión de extractores OCR.
@@ -28,6 +30,7 @@ export class ExtractorService {
     @Inject(EXTRACTOR_REPOSITORY)
     private readonly repository: IExtractorRepository,
     private readonly strategyRegistry: StrategyRegistry,
+    private readonly fieldValidator: FieldValidatorService,
     @Inject(CONTEXT) private readonly context: any,
   ) {
     this.log = this.context.log;
@@ -103,8 +106,25 @@ export class ExtractorService {
 
       const result = await strategy.extract(enrichedInput, extractor.strategyConfig);
 
+      // Aplicar validaciones del schema contra los valores extraídos
+      const validationErrors = this.fieldValidator.validate(extractor.schema, result.fields);
+      if (validationErrors.length > 0) {
+        const warnings: ExtractionWarning[] = validationErrors.map(
+          (e) => new ExtractionWarning({
+            field: e.fieldName,
+            rule: e.rule,
+            extractedValue: e.extractedValue,
+            message: e.message,
+          }),
+        );
+        result.warnings.push(...warnings);
+        this.log.warn(
+          `Extracción con ${validationErrors.length} advertencia(s) de validación: ${JSON.stringify(warnings)}`,
+        );
+      }
+
       this.log.debug(
-        `Extracción completada. Confianza: ${result.confidence}, Campos: ${Object.keys(result.fields).length}`,
+        `Extracción completada. Confianza: ${result.confidence}, Campos: ${Object.keys(result.fields).length}, Advertencias: ${result.warnings.length}`,
       );
       return result;
     } catch (error) {

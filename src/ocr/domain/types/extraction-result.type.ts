@@ -1,3 +1,5 @@
+import { ExtractionWarning } from './extraction-warning.type';
+
 /**
  * Representa el resultado de una extracción OCR.
  * Contiene los campos extraídos, el nivel de confianza
@@ -11,8 +13,8 @@ export class ExtractionResult {
   /** Nivel de confianza de la extracción (0.0 a 1.0) */
   confidence: number;
 
-  /** Advertencias generadas durante la extracción */
-  warnings: string[];
+  /** Advertencias estructuradas generadas al validar los valores extraídos */
+  warnings: ExtractionWarning[];
 
   /** Metadatos adicionales del resultado de la extracción */
   metadata?: Record<string, any>;

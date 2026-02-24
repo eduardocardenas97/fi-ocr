@@ -127,7 +127,12 @@ export class ExtractorResolver {
     return {
       campos: result.fields,
       confianza: result.confidence,
-      advertencias: result.warnings,
+      advertencias: (result.warnings ?? []).map((w) => ({
+        campo: w.field,
+        regla: w.rule,
+        valorExtraido: w.extractedValue ?? null,
+        mensaje: w.message,
+      })),
     };
   }
 

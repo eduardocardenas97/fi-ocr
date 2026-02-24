@@ -7,6 +7,7 @@ import { FiDeoStrategy } from './infrastructure/strategies/fi-deo.strategy';
 import { StrategyRegistry } from './application/registry/strategy.registry';
 import { ExtractorService } from './application/services/extractor.service';
 import { ExtractorResolver } from './presentation/extractor.resolver';
+import { FieldValidatorService } from './application/services/field-validator.service';
 
 /**
  * Módulo principal de OCR.
@@ -25,6 +26,9 @@ import { ExtractorResolver } from './presentation/extractor.resolver';
 
     // Servicio de aplicación
     ExtractorService,
+
+    // Motor de validaciones post-extracción
+    FieldValidatorService,
 
     // Registry de estrategias — se inicializa con FiDeoStrategy
     {

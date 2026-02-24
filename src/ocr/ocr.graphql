@@ -87,6 +87,20 @@ type Extractor {
 }
 
 """
+Advertencia estructurada generada cuando un valor extraído no cumple una validación del schema
+"""
+type AdvertenciaValidacion {
+  "Nombre del campo que no superó la validación"
+  campo: String!
+  "Regla de validación que falló (ej: REGEX, LONGITUD_MINIMA, REQUERIDO)"
+  regla: String!
+  "Valor extraído que causó el fallo (nulo si el campo estaba ausente)"
+  valorExtraido: String
+  "Mensaje de error definido en el schema del extractor"
+  mensaje: String!
+}
+
+"""
 Resultado de una extracción OCR ejecutada sobre un documento
 """
 type ResultadoExtraccion {
@@ -94,8 +108,8 @@ type ResultadoExtraccion {
   campos: JSON!
   "Nivel de confianza de la extracción (0.0 a 1.0)"
   confianza: Float!
-  "Advertencias generadas durante la extracción"
-  advertencias: [String!]
+  "Advertencias estructuradas de validación generadas durante la extracción"
+  advertencias: [AdvertenciaValidacion!]
 }
 
 # ────────────────────────────────────
